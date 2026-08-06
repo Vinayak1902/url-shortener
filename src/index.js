@@ -1,5 +1,6 @@
 const express = require('express');
 const { connectRedis } = require('./db/redisClient');
+const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const db = require('./db/db');
@@ -15,6 +16,19 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware to automatically parse JSON request bodies
 app.use(express.json());
+
+// Limit each IP to 100 requests every 15 minutes
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    message: {
+        message: 'Too many requests. Please try again later.'
+    },
+    standardHeaders: true,
+    legacyHeaders: false
+});
+
+app.use(limiter);
 
 // Register application routes
 app.use('/', healthRoutes);
