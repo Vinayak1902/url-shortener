@@ -1,6 +1,7 @@
 const shortid = require('shortid');
 const pool = require('../db/db');
 const { redisClient } = require('../db/redisClient');
+const db = require('../db/db');
 
 /**
  * Creates a new short URL mapping and stores it in PostgreSQL.
@@ -9,6 +10,15 @@ const { redisClient } = require('../db/redisClient');
  * @returns {Object} The generated short code and original URL.
  */
 async function createShortUrl(originalUrl) {
+    // Check if the URL already exists
+    const existingUrl = await db.query(
+        `SELECT * FROM urls WHERE original_url = $1`,
+        [originalUrl]
+    );
+
+    if (existingUrl.rows.length > 0) {
+        return existingUrl.rows[0];
+    }
     // Generate a unique short code
     const shortCode = shortid.generate();
 
