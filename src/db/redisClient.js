@@ -2,7 +2,7 @@ const { createClient } = require('redis');
 
 // Create a Redis client that connects to the local Redis container.
 const redisClient = createClient({
-    url: 'redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}',
+    url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
 });
 
 // Log connection status for easier debugging.
