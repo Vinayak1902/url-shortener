@@ -1,4 +1,5 @@
 const { createShortUrl, getOriginalUrl, getUrlStats } = require('../services/urlService');
+const validator = require('validator');
 
 /**
  * Handles requests to create a shortened URL.
@@ -13,9 +14,20 @@ async function shortenUrl(req, res) {
         const { url } = req.body;
 
         // Basic input validation
+        // Validate request body
         if (!url) {
             return res.status(400).json({
-                error: 'URL is required',
+                message: 'URL is required.'
+            });
+        }
+
+        // Validate URL format
+        if (!validator.isURL(url, {
+            require_protocol: true,
+            protocols: ['http', 'https']
+        })) {
+            return res.status(400).json({
+                message: 'Please provide a valid URL.'
             });
         }
 
